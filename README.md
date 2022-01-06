@@ -1,7 +1,9 @@
 # serverless-sts-creds
 
-``sts-creds.py`` is a wrapper script that provides AWS credentials as shell ENV variables. It us
-to be used with serverless deployment tools (SAM CLI or CDK) within a CI/CD environment. 
+``sts-creds.py`` is a wrapper script that provides AWS credentials as shell ENV variables. It is
+to be used with serverless deployment tools
+( [SAM CLI](https://aws.amazon.com/blogs/compute/accelerating-serverless-development-with-aws-sam-accelerate/) 
+or [CDK](https://aws.amazon.com/cdk/)) within a CI/CD environment.
 
 ## Usage
 
