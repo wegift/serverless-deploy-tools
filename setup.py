@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='sts-creds',
-    version='0.1.0',
+    version='0.1.1',
     author='WeGift',
     scripts=['bin/sts-creds.py'],
     license='LICENSE.txt',
