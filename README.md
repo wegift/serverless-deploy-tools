@@ -1,7 +1,31 @@
 # serverless-sts-creds
 
-sts-creds.py is a wrapper script that provides AWS credentials as shell ENV variables. It us
+``sts-creds.py`` is a wrapper script that provides AWS credentials as shell ENV variables. It us
 to be used with serverless deployment tools (SAM CLI or CDK) within a CI/CD environment. 
+
+## Usage
+
+Before calling ``cdk|sam deploy``:
+
+```shell
+pip install git+https://github.com/wegift/serverless-sts-creds.git
+eval sts-creds.py {env}
+```
+where {env} is either prod or sandbox.
+
+and then...
+
+```shell
+sam deploy
+      --parameter-overrides "ParameterKey=Environment,ParameterValue=$env"
+      --role-arn $role
+      --no-confirm-changeset
+
+```
+
+```shell
+cdk deploy --require-approval never --role-arn $role
+```
 
 ## Dependencies
 
@@ -9,7 +33,7 @@ Python3 and boto3.
 
 ## Configuration
 
-sts-creds.py expects the following IAM user API credentials to be available as ENV variables:
+``sts-creds.py`` expects the following IAM user API credentials to be available as ENV variables:
 
 - ``AWS_ACCESS_KEY_ID_PROD``
 - ``AWS_SECRET_ACCESS_KEY_PROD``
@@ -18,7 +42,7 @@ sts-creds.py expects the following IAM user API credentials to be available as E
 
 It's only hardcoded to prod or sandbox but could be easily modified to support more environments.
 
-sts-creds.py also expects the following pipeline execution roles ARNs to be available as ENV variables:
+``sts-creds.py`` also expects the following pipeline execution roles ARNs to be available as ENV variables:
 
 - ``AWS_PIPELINE_EXEC_ROLE_PROD``
 - ``AWS_PIPELINE_EXEC_ROLE_SANDBOX``
@@ -95,27 +119,3 @@ pipeline-cloudformation-execution-role:
 ```
 
 This role is passed to the Cloudformation service via SAM CLI or CDK (``--role-arn``).
-
-## Usage
-
-Before calling ``cdk|sam deploy``:
-
-```shell
-pip install git+https://github.com/wegift/serverless-sts-creds.git
-eval sts-creds.py {env}
-```
-where {env} is either prod or sandbox.
-
-and then...
-
-```shell
-sam deploy
-      --parameter-overrides "ParameterKey=Environment,ParameterValue=$env"
-      --role-arn $role
-      --no-confirm-changeset
-
-```
-
-```shell
-cdk deploy --require-approval never --role-arn $role
-```
