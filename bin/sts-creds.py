@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# Script to get role session for pipeline-deployment from env variables in Gitlab CI/CD
-# It is to be called before sam-cli using: eval `sts-deploy-creds.py <env>` where env = prod or sandbox
 
 import os
 import sys
@@ -11,10 +9,14 @@ if not os.getenv("AWS_REGION"):
 else:
     AWS_REGION = os.getenv("AWS_REGION")
 
-PIPELINE_EXEC_ROLE = {
-    "prod": "arn:aws:iam::798139289016:role/pipeline-deployment",
-    "sandbox": "arn:aws:iam::671446661642:role/pipeline-deployment",
-}
+if not os.getenv("AWS_PIPELINE_EXEC_ROLE_PROD") or not os.getenv("AWS_PIPELINE_EXEC_ROLE_SANDBOX"):
+    print("echo AWS_PIPELINE_EXEC env variables not set")
+    exit(1)
+else:
+    pipeline_exec_role = {
+        "prod": os.getenv("AWS_PIPELINE_EXEC_ROLE_PROD"),
+        "sandbox": os.getenv("AWS_PIPELINE_EXEC_ROLE_SANDBOX")
+    }
 
 
 def set_iam_user_creds(aws_account):
@@ -40,7 +42,7 @@ def assume_role(iam_user_creds):
             aws_secret_access_key=aws_secret_access_key,
             region_name=AWS_REGION,
         )
-        role = PIPELINE_EXEC_ROLE[aws_account]
+        role = pipeline_exec_role[aws_account]
         role_creds = sts.assume_role(
             RoleArn=role, RoleSessionName="pipeline-deployment"
         )
