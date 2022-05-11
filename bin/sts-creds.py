@@ -9,15 +9,16 @@ if not os.getenv("AWS_REGION"):
 else:
     AWS_REGION = os.getenv("AWS_REGION")
 
-if not os.getenv("AWS_PIPELINE_EXEC_ROLE_PROD") or not os.getenv("AWS_PIPELINE_EXEC_ROLE_SANDBOX"):
-    print("echo AWS_PIPELINE_EXEC env variables not set")
-    exit(1)
-else:
-    pipeline_exec_role = {
-        "prod": os.getenv("AWS_PIPELINE_EXEC_ROLE_PROD"),
-        "sandbox": os.getenv("AWS_PIPELINE_EXEC_ROLE_SANDBOX")
-    }
-
+def get_pipeline_exec_role(aws_account):
+    try:
+        if "sandbox" in aws_account:
+            return os.environ["AWS_PIPELINE_EXEC_ROLE_SANDBOX"]
+        elif "prod" in aws_account:
+            return os.environ["AWS_PIPELINE_EXEC_ROLE_PROD"]
+        else:
+            raise ValueError("Invalid AWS account")
+    except KeyError as e:
+        raise KeyError("Missing environment variable") from e
 
 def set_iam_user_creds(aws_account):
     if "sandbox" in aws_account:
@@ -42,9 +43,8 @@ def assume_role(iam_user_creds):
             aws_secret_access_key=aws_secret_access_key,
             region_name=AWS_REGION,
         )
-        role = pipeline_exec_role[aws_account]
         role_creds = sts.assume_role(
-            RoleArn=role, RoleSessionName="pipeline-deployment"
+            RoleArn=get_pipeline_exec_role(aws_account), RoleSessionName="pipeline-deployment"
         )
     except Exception as e:
         print("echo '{}'".format(e))
